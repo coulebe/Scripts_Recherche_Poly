@@ -58,6 +58,7 @@ Draw = Draw_Tab;
 T_amb = 25;
 T_in = 25;
 Tm = [ones(N,1)*T_tank;T_amb];
+V_vec = zeros(Max_Simulation_Count, 1);
 V = 0;
 
 Power = zeros(HeatElem.N,Max_Simulation_Count);
@@ -70,22 +71,22 @@ while (count < Max_Simulation_Count)
 
     if(~isempty(Draw))
         if(count > (Draw(1,1) * 60*60/deltaT))
-            V = Draw(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s
+            V_vec(count+1,:) = Draw(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s
             if(count > (Draw(1,1) * 60*60/deltaT + Draw(1,2)*60/deltaT))
-                V = 0;
+                V_vec(count+1,:) = 0;
                 Draw(1,:) = [];
             end
         else
-            V = 0;
+            V_vec(count+1,:) = 0;
         end
     else
-        V = 0;
+        V_vec(count+1,:) = 0;
     end
 %Check if a heatint element need to be activated 
     heatState = 1*PowerState(Tm,HeatElem,T_Target,deltaX, N);
 
 
-    [Z1, Z2, Z3] = Matrix__(N, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);
+    [Z1, Z2, Z3] = Matrix__(N, V_vec(count+1,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
 
 
     Am = Z1\Z2;

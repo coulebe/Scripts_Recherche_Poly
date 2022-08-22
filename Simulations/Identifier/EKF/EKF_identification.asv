@@ -2,7 +2,7 @@ clear ;
 load('Donnee_sim_Null_Flow.mat');
 addpath("D:\Alfred\Cours\Projet_Recherche\Poly\Scripts_Recherche_Poly\Simulations\Crank_Nicolson_method\Réadapté");
 data = [data; T_amb*ones(1,Max_Simulation_Count)];
-% data = data + normrnd(0, 0.1, size(data)); % Add some noise
+data = data + normrnd(zeros(N+1,1), eye(N+1,N+1), size(data)); % Add some noise
 %%
 tic
 %Variance matrices

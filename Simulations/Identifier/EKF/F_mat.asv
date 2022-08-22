@@ -15,6 +15,6 @@ function F = F_mat(X_k, N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE)
     %We calculate F2 applied on X_k and Q
     F2_of_X_k = F2_mat(X_k, N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE);
     
-    F  = F1_of_f2 \F2_of_X_k;
+    F  = F1_of_f2 \
     
 end
