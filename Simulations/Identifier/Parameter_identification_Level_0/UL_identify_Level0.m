@@ -7,7 +7,8 @@ dTdt = diff(data(2:9,:), 1, 2)/deltaT;
 mat = zeros(I,J);
 for i = 1:I
     for j = 1:J
-        mat(i,j) = (-dTdt(i,j) +(data(i+1,j) - T_amb)*Tank.UL)/(d2Tdx2(i,j)*eps);
+        mat(i,j) = (-dTdt(i,j) + d2Tdx2(i,j)*eps*Tank.Dc)/(data(i+1,j) - T_amb);
     end
 end
 
+UL_mat = mean(mat/10, 2);

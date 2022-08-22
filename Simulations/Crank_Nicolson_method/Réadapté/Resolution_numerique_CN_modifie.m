@@ -11,7 +11,7 @@ Tank(1).Cv = 4185.5; %J/(kg T)%Heat capacity of water
 Tank(1).Rho = 1e3; %kg/m^3 %Density of water
 Tank(1).Dc = 0.14e-6; %m²/s % Thermal diffusity coefficient
 Tank(1).UL = 6.3588e-7; %s^-1 %Thermal losses coefficient 
-Tank(1).UL_ = 1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries 
+Tank(1).UL_ = 0*1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries 
 
 %Heating Element
 HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions',{}, 'Thermos', {}, 'N', {});
@@ -85,7 +85,7 @@ while (count < Max_Simulation_Count)
     heatState = 1*PowerState(Tm,HeatElem,T_Target,deltaX, N);
 
 
-    [Z1, Z2, Z3] = Matrix_(N, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);
+    [Z1, Z2, Z3] = Matrix__(N, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);
 
 
     Am = Z1\Z2;
