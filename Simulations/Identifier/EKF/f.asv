@@ -1,6 +1,0 @@
-function X_k_1 = f(T_k, theta_k, N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE)
-    %returns X_k+1 the augmented matrice for the next time step, size(N+4xN+4 matrice)
-    %A_ext matrice
-    [Z1, Z2, Z3] = Matrix__(N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE);
-    A = [Z1, zeros(N_layers+1)]
-end

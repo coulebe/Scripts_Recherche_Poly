@@ -1,7 +1,7 @@
-function F1 = F1_mat(X_k, N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE)
+function F1 = F1_mat(X_k, N_layers, V,deltaX,deltaT)
     %X_k = [T_k; Theta_k] where theta_k = [alpha_k, Dc_k, UL_k]
     %T_k = [T1_k, T2_k, ..., TN_k, T_amb ]
-    [Z1, ~, ~] = Matrix__(N_layers, V,deltaX,deltaT,eps, Tank, heatState, HE);
+    [Z1, ~] = Matrix(N_layers, V, deltaX, deltaT,X_k(N_layers+2), X_k(N_layers+3), X_k(N_layers+4));
     
     %Jacobian of the function f1 given theta_k's elements
     a = 0.5/(deltaX^2);
