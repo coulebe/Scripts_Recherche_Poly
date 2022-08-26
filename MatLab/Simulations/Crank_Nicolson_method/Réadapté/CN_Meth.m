@@ -1,6 +1,6 @@
 function [tsol, xVector, sol] = CN_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_tank, T_amb, T_in, T_target, eps  )
     %This function resolve the pdepe of the temperature in a water tank by
-    %using pdepe method
+    %using Crank-Nicolson method
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Parameters%%%%%%%%%%%%%%%%%%%%%
     %
