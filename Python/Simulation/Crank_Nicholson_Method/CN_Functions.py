@@ -158,16 +158,16 @@ def DrawRate(t, Tank, DrawTab):
     Outputs: Value of Draw Rate(m/s)
         '''
     I = np.size(DrawTab, 0)
-    if I:
+    if I > 0:
         for i in reversed(range(I)):
             if t >= DrawTab[i,1] *3600:
                 break
-            if(t >= DrawTab[i,1] *3600) and (t <= DrawTab[i,1] *3600 + DrawTab[i,2] *60):
-                V = DrawTab[i,3] * 1e-3 * Tank.H/(Tank.Vol*60)
-            else:
-                V = 0
-    else:
-         V = 0
+        if(t >= (DrawTab[i,1] *3600)) and (t <= (DrawTab[i,1] *3600 + DrawTab[i,2] *60)):
+            V = DrawTab[i,3] * 1e-3 * Tank.H/(Tank.Vol*60)
+        else:
+            V = 0
+    # else:
+    #      V = 0
                  
     return V
     
@@ -197,7 +197,7 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
         sol: Solution matrice(NxM)
         '''
     #Time array
-    tsol = np.arange(0, sim_time*3600, deltaT)
+    tsol = np.arange(0, sim_time*3600+1, deltaT)
     M = np.size(tsol)
     #Space Vector
     xVector = np.linspace(0, Tank.H, N_layer)
@@ -227,22 +227,5 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
         
     
     return tsol, xVector, sol
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     

@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.ticker import LinearLocator
+# from matplotlib.ticker import LinearLocator
 import CN_Functions as CN
 
 
@@ -18,8 +18,8 @@ DrawTab = np.array([
                         ])
 #%%
 deltaT = 1 #s
-sim_time = 10 #h
-N = 10
+sim_time = 5 #h
+N = 100
 #%%
 T_init = 25
 T_amb = 25
