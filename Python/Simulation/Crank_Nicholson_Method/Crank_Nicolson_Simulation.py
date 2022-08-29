@@ -18,7 +18,7 @@ DrawTab = np.array([
                         ])
 #%%
 deltaT = 1 #s
-sim_time = 5 #h
+sim_time = 10 #h
 N = 100
 #%%
 T_init = 25
@@ -34,10 +34,12 @@ tsol, xVector, sol = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init,
 #%%Plotting
 #%%
 
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
+# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+# tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
 
-surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol[0:N, :], cmap=cm.coolwarm, linewidth=0, antialiased=False)
-fig.colorbar(surf, shrink=10, aspect=5)
+# surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol[0:N, :], cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
+# fig.colorbar(surf, shrink=10, aspect=5)
 
-plt.show()
+# plt.show()
+#%%Save
+#%%

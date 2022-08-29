@@ -1,8 +1,7 @@
 import numpy as np
 #%%
 #%%Objects
-# Tank = struct('Vol', {}, 'H', {}, 'Cv', {},'Rho', {}, 'Dc', {}, 'UL', {}, 'UL_', {});
-#HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions',{}, 'Thermos', {}, 'N', {});
+
 class Tank:
     '''Class containning the Water tank property
     Attributs:
@@ -160,10 +159,10 @@ def DrawRate(t, Tank, DrawTab):
     I = np.size(DrawTab, 0)
     if I > 0:
         for i in reversed(range(I)):
-            if t >= DrawTab[i,1] *3600:
+            if t >= DrawTab[i,0] *3600:
                 break
-        if(t >= (DrawTab[i,1] *3600)) and (t <= (DrawTab[i,1] *3600 + DrawTab[i,2] *60)):
-            V = DrawTab[i,3] * 1e-3 * Tank.H/(Tank.Vol*60)
+        if(t >= (DrawTab[i,0] *3600)) and (t <= (DrawTab[i,0] *3600 + DrawTab[i,1] *60)):
+            V = DrawTab[i,2] * 1e-3 * Tank.H/(Tank.Vol*60)
         else:
             V = 0
     # else:
@@ -208,6 +207,7 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
     #Initialisation
     sol[:,0] = np.concatenate((T_init * np.ones((N_layer)), np.array([T_amb])), axis = 0)
     #simulation
+
     for i in range(1,M):
         
         V  = DrawRate(tsol[i], Tank, Draw_Tab)
