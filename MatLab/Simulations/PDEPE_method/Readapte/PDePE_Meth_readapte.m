@@ -26,21 +26,21 @@ HeatElem(1).N = 2;
 %%
 %Schedule of water drawing
 Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-    2.5   40  3 ;
-    5 15  6;
+%     2.5   40  3 ;
+%     5 15  6;
     ];
 %%
 %Simulation parameters
 %Time
 deltaT = 5; %s
-sim_time = 10;%h
+sim_time = 5;%h
 t_max = 3600*sim_time;
 nb_point = t_max/deltaT + 1;
 %Space
-n = 10;
+n = 100;
 xVector = linspace(0,Tank.H,n); %Discretization of space
 %Conditions
-T_tank = 60; %Initial temperature in the tank 
+T_tank = 25; %Initial temperature in the tank 
 T_amb = 25; %Ambiant temparature
 T_in = 25; %Inlet water temperature
 T_target = 60; 

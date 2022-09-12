@@ -41,11 +41,11 @@ T = np.shape(data)[1]
 data = np.concatenate((data, T_amb*np.ones((1, T)) ), axis = 0)
 
 #Variance matrices
-W = np.concatenate( (\
+W = 0*np.concatenate( (\
                 np.concatenate( (np.eye(N_layers+1) , np.zeros((N_layers+1,3)) ), axis = 1), \
                 np.concatenate( (np.zeros((3,N_layers+1)) ,  np.diag([1, 1e-7, 1e-7])), axis = 1)    \
                  ), axis = 0)  #Process noise covariance matrice
-R = np.eye(N_layers+1)
+R = 0.1*np.eye(N_layers+1) #Measurement noise
 #
 H = np.concatenate( (np.eye(N_layers+1) , np.zeros((N_layers+1,3)) ), axis = 1)
 
@@ -90,21 +90,21 @@ Theta = X_hat[-3:,:]
 #%%
 #Result Plot  
 plt.figure()
-plt.plot(tsol/3600, Theta[0,:], label = '\epsilon _ hat')
+plt.plot(tsol/3600, Theta[0,:],'*', label = '\epsilon _ hat')
 plt.grid()
 plt.hlines(eps, tsol[0], tsol[-1], label = '\epsilon')
 plt.legend(loc = 'best')
 
 
 plt.figure()
-plt.plot(tsol/3600, Theta[1,:], label = 'Dc_ hat')
+plt.plot(tsol/3600, Theta[1,:],'*', label = 'Dc_ hat')
 plt.grid()
 plt.hlines(Tank_.Dc, tsol[0], tsol[-1], label = 'Dc')
 plt.legend(loc = 'best')
 
     
 plt.figure()
-plt.plot(tsol/3600, Theta[2,:], label = 'UL_ hat')
+plt.plot(tsol/3600, Theta[2,:],'*', label = 'UL_ hat')
 plt.grid()
 plt.hlines(Tank_.Dc, tsol[0], tsol[-1], label = 'UL')
 plt.legend(loc = 'best')   

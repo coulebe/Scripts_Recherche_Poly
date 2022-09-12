@@ -23,8 +23,8 @@ HeatElem(1).N = 2;
 %%
 %Schedule of water drawing
 Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-%     2.5   40  3 ;
-%     5 15  6;
+    2.5   40  3 ;
+    5 15  6;
     ];
 %%
 %Simulation parameters
@@ -59,7 +59,7 @@ T_amb = 25;
 T_in = 25;
 Tm = [ones(N,1)*T_tank;T_amb];
 V_vec = zeros(Max_Simulation_Count, 1);
-V = 0;
+% V = 0;
 
 Power = zeros(HeatElem.N,Max_Simulation_Count);
 PowerTotal = zeros(1,Max_Simulation_Count);
@@ -69,31 +69,32 @@ E = 0;
 Q_mat = zeros(N,Max_Simulation_Count);
 while (count < Max_Simulation_Count)
 
-    if(~isempty(Draw))
-        if(count > (Draw(1,1) * 60*60/deltaT))
-            V_vec(count+1,:) = Draw(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s
-            if(count > (Draw(1,1) * 60*60/deltaT + Draw(1,2)*60/deltaT))
-                V_vec(count+1,:) = 0;
-                Draw(1,:) = [];
-            end
-        else
-            V_vec(count+1,:) = 0;
-        end
-    else
-        V_vec(count+1,:) = 0;
-    end
+%     if(~isempty(Draw))
+%         if(count > (Draw(1,1) * 60*60/deltaT))
+%             V_vec(count+1,:) = Draw(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s
+%             if(count > (Draw(1,1) * 60*60/deltaT + Draw(1,2)*60/deltaT))
+%                 V_vec(count+1,:) = 0;
+%                 Draw(1,:) = [];
+%             end
+%         else
+%             V_vec(count+1,:) = 0;
+%         end
+%     else
+%         V_vec(count+1,:) = 0;
+%     end
+    V_vec(count+1,:) = drawRate(count, Tank, Draw);
 %Check if a heatint element need to be activated 
     heatState = 1*PowerState(Tm,HeatElem,T_Target,deltaX, N);
 
 
-    [Z1, Z2, Z3] = Matrix__(N, V_vec(count+1,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
+    [Z1, Z2, Z3] = Matrix_(N, V_vec(count+1,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
 
 
     Am = Z1\Z2;
     Bm = Z1\Z3;
     Tm =  Am *Tm + Bm ;
     %Boundary conditions
-    if V == 0
+    if V_vec(count+1,:) == 0
         Tm(1) = (4*Tm(2)-Tm(3))/3;
     else
         Tm(1) = T_in;

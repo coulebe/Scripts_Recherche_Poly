@@ -13,15 +13,15 @@ HE = CN.HeatElem(.95, 6e3, np.array([[0.2975], [.7735]]), \
               np.array([[0.2975], [.7735]]), 2)
 
 DrawTab = np.array([
-                    [2.5, 40, 3], \
-                    [5, 15, 6]\
+                    # [2.5, 40, 3], \
+                    # [5, 15, 6]\
                         ])
 #%%
 deltaT = 1 #s
 sim_time = 10 #h
 N = 100
 #%%
-T_init = 25
+T_init = 60
 T_amb = 25
 T_in = 25
 T_target = 60
@@ -34,12 +34,12 @@ tsol, xVector, sol = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init,
 #%%Plotting
 #%%
 
-# fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-# tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
+fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
 
-# surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol[0:N, :], cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
-# fig.colorbar(surf, shrink=10, aspect=5)
+surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol[0:N, :], cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
+fig.colorbar(surf, shrink=10, aspect=5)
 
-# plt.show()
+plt.show()
 #%%Save
 #%%

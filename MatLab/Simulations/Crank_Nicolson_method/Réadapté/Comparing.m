@@ -33,16 +33,16 @@ sim_time = 10;%h
 n = 10;
 %Conditions
 T_tank = 25; %Initial temperature in the tank 
-T_amb = 21.11; %Ambiant temparature
-T_in = 18; %Inlet water temperature
-T_target = 50; 
+T_amb = 25; %Ambiant temparature
+T_in = 25; %Inlet water temperature
+T_target = 60; 
 eps = 150;
 %%
 Tank(1).UL = 4*1.5*sqrt(pi/Tank.A)/(Tank.Rho*Tank.Cv*n); %s^-1 %Thermal losses coefficient 
 Tank(1).UL_ = Tank.UL*(1 + (n/(4*Tank.H)) * sqrt(Tank.A/pi) ); %s^-1 %Thermal losses coefficient on boundaries 
 %%
 [tsol_CN, xVector_CN, sol_CN] = CN_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,n, T_tank, T_amb, T_in, T_target, eps  );
-addpath("D:\Alfred\Cours\E22\Recherche\Simulations\PDEPE_method\Readapte");
+addpath("D:\Alfred\Cours\Projet_Recherche\Poly\Scripts_Recherche_Poly\MatLab\Simulations\PDEPE_method\Readapte");
 [tsol_PDEPE, xVector_PDEPE, sol_PDEPE] = PDEPE_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,n, T_tank, T_amb, T_in, T_target, eps  );
 
 
