@@ -22,7 +22,7 @@ deltaT = 1 #s
 sim_time = 5 #h
 N = 10
 #%%
-T_init = 60
+T_init = 25
 T_amb = 25
 T_in = 25
 T_target = 60
@@ -45,7 +45,7 @@ plt.show()
 #%%Save
 vVecmesh = mb.repmat(vVec, N, 1)
 
-dico = {'x' : xVector_mesh,  't' : tsol_mesh, 'u' : sol, 'Q' : Q_mat, \
+dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
             'V': vVecmesh}
 np.save('EWH_sim_NullFlow_CN_data', dico)
 #%%
