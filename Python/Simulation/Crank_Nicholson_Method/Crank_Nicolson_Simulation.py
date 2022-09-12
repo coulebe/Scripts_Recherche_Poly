@@ -1,5 +1,6 @@
 #%%Imports
 import numpy as np
+import numpy.matlib as mb
 import matplotlib.pyplot as plt
 from matplotlib import cm
 # from matplotlib.ticker import LinearLocator
@@ -18,8 +19,8 @@ DrawTab = np.array([
                         ])
 #%%
 deltaT = 1 #s
-sim_time = 10 #h
-N = 100
+sim_time = 5 #h
+N = 10
 #%%
 T_init = 60
 T_amb = 25
@@ -28,7 +29,7 @@ T_target = 60
 eps = 150
 #%%Simulation
 #%%
-tsol, xVector, sol = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps)
+tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps)
 
 
 #%%Plotting
@@ -37,9 +38,14 @@ tsol, xVector, sol = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init,
 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
 
-surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol[0:N, :], cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
+surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol, cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
 fig.colorbar(surf, shrink=10, aspect=5)
 
 plt.show()
 #%%Save
+vVecmesh = mb.repmat(vVec, N, 1)
+
+dico = {'x' : xVector_mesh,  't' : tsol_mesh, 'u' : sol, 'Q' : Q_mat, \
+            'V': vVecmesh}
+np.save('EWH_sim_NullFlow_CN_data', dico)
 #%%
