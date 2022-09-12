@@ -165,8 +165,8 @@ def DrawRate(t, Tank, DrawTab):
             V = DrawTab[i,2] * 1e-3 * Tank.H/(Tank.Vol*60)
         else:
             V = 0
-    # else:
-    #      V = 0
+    else:
+         V = 0
                  
     return V
     
@@ -194,6 +194,8 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
         tsol: solution time vector(1xM)(sec)
         xVector: Space vector (1xN_layers)(m)
         sol: Solution matrice(NxM)
+        Q_mat: (NxM) Matrix containing the power giving at each layer(by heating elements) it is also the save of Z3 vector at each frame
+        vVec: (1xM) vector saving the water drawing rate at each frame
         '''
     #Time array
     tsol = np.arange(0, sim_time*3600+1, deltaT)
@@ -203,6 +205,8 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
     #Simulation parameters
     deltaX = Tank.H/N_layer
     sol = np.zeros((N_layer+1, M))
+    Q_mat = np.zeros((N_layer, M))
+    vVec = np.zeros(M)
     
     #Initialisation
     sol[:,0] = np.concatenate((T_init * np.ones((N_layer)), np.array([T_amb])), axis = 0)
@@ -222,10 +226,16 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
             sol[0,i] = T_in
         else:
             sol[0,i] = (4*sol[1,i] - sol[2,i])/ 3
-            
+        #Saving other data
+        Q_mat[:, i] = Z3[0:N_layer]
+        vVec[i] = V
             
         
     
-    return tsol, xVector, sol
+    return tsol, xVector, sol[0:N_layer, :], Q_mat, vVec
     
+
+
+
+
     
