@@ -2,7 +2,6 @@
 import numpy as np
 import numpy.matlib as mb
 import matplotlib.pyplot as plt
-from matplotlib import cm
 # from matplotlib.ticker import LinearLocator
 import CN_Functions as CN
 
@@ -35,11 +34,12 @@ tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_tim
 #%%Plotting
 #%%
 
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+fig, ax = plt.subplots()
 tsol_mesh, xVector_mesh = np.meshgrid(tsol/3600, xVector)
-
-surf = ax.plot_surface(tsol_mesh, xVector_mesh, sol, cmap=cm.coolwarm, linewidth=0, antialiased=False, rcount = 200, ccount = 200)
-fig.colorbar(surf, shrink=10, aspect=5)
+im = ax.contourf(tsol_mesh,xVector_mesh,  sol)
+ax.set_ylabel('x(m)')
+ax.set_xlabel('t(h)')
+fig.colorbar(mappable=im)
 
 plt.show()
 #%%Save
