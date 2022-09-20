@@ -106,8 +106,8 @@ for i = 1:size(theta,2)
     T(:,i) = Mreg(i)*theta(:,i);    
 end
 
-lambda = 1e-1; %the regularization parameter 
-MAXITER = 5;   %maximum number of inner iterations
+lambda = 1e-2; %the regularization parameter 
+MAXITER = 1000;   %maximum number of inner iterations
 w = tac_reconstruction(y, T, lambda,MAXITER);
 w = w(:,end).*Mreg; %identified parameters corresponding to the basis function in Theta
 
