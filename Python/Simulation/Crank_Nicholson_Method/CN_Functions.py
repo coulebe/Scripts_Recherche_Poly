@@ -173,7 +173,7 @@ def DrawRate(t, Tank, DrawTab):
 
 #%%
 
-def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T_in, T_target, eps  ):
+def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T_in, T_target, eps, He_Activ: bool = True  ):
     '''
     This function resolve the pdepe of the temperature in a water tank by using Crank-Nicolson discretization scheme
     Parameters:
@@ -189,7 +189,8 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
         T_amb: Ambient temperaure(°C)
         T_in: inlet fluid temperature(°C)
         T_target: Target temperature for the heating element control(°C)
-        eps coefficient that replace the thermal expansion coefficient
+        eps:  coefficient that replace the thermal expansion coefficient
+        He_Activ: Used to allow or block heating elements activity
     Outputs:
         tsol: solution time vector(1xM)(sec)
         xVector: Space vector (1xN_layers)(m)
@@ -216,7 +217,7 @@ def CN_meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_init, T_amb, T
         
         V  = DrawRate(tsol[i], Tank, Draw_Tab)
         
-        heatState = PowerState(sol[:, i-1], HeatElem, T_target, deltaX, N_layer)
+        heatState = He_Activ*PowerState(sol[:, i-1], HeatElem, T_target, deltaX, N_layer)
         
         Z1, Z2, Z3 = matrix(N_layer, V, deltaX, deltaT, eps, heatState, Tank, HeatElem)
         #Update

@@ -13,7 +13,7 @@ HE = CN.HeatElem(.95, 6e3, np.array([[0.2975], [.7735]]), \
               np.array([[0.2975], [.7735]]), 2)
 
 DrawTab = np.array([
-                    # [2.5, 40, 3], \
+                    [0.5, 40, 1.5], \
                     # [5, 15, 6]\
                         ])
 #%%
@@ -21,14 +21,14 @@ deltaT = 1 #s
 sim_time = 5 #h
 N = 10
 #%%
-T_init = 25
+T_init = 60
 T_amb = 25
 T_in = 25
 T_target = 60
 eps = 150
 #%%Simulation
 #%%
-tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps)
+tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps, He_Activ = False )
 
 
 #%%Plotting
@@ -47,5 +47,5 @@ vVecmesh = mb.repmat(vVec, N, 1)
 
 dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
             'V': vVecmesh}
-np.save('EWH_sim_NullFlow_CN_data', dico)
+np.save('EWH_sim_NullPower_CN_data', dico)
 #%%
