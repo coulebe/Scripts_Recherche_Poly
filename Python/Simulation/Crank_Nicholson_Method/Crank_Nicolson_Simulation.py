@@ -13,12 +13,12 @@ HE = CN.HeatElem(.95, 6e3, np.array([[0.2975], [.7735]]), \
               np.array([[0.2975], [.7735]]), 2)
 
 DrawTab = np.array([
-                    [0.5, 40, 1.5], \
+                    [0.25, 60, 1.5], \
                     # [5, 15, 6]\
                         ])
 #%%
 deltaT = 1 #s
-sim_time = 5 #h
+sim_time = 1.5 #h
 N = 10
 #%%
 T_init = 60
