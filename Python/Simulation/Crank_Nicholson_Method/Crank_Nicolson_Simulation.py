@@ -18,13 +18,13 @@ DrawTab = np.array([
                         ])
 #%%
 deltaT = 1 #s
-sim_time = 1.5 #h
-N = 10
+sim_time = 5 #h
+N = 100
 #%%
-T_init = 60
+T_init = 70
 T_amb = 25
 T_in = 25
-T_target = 60
+T_target = 70
 eps = 150
 #%%Simulation
 #%%
@@ -47,5 +47,5 @@ vVecmesh = mb.repmat(vVec, N, 1)
 
 dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
             'V': vVecmesh}
-np.save('EWH_sim_NullPower_CN_data', dico)
+np.save('EWH_sim_NullPower_100layers_CN_data', dico)
 #%%
