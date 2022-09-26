@@ -16,20 +16,20 @@ Tank(1).UL_ = 0*1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries
 %Heating Element
 HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions',{}, 'Thermos', {}, 'N', {});
 HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
+HeatElem(1).Power = 0*6e3; %Watt % Electrical power delivered by each heating element
 HeatElem(1).Positions = [0.2975; 0.7735];
 HeatElem(1).Thermos = [0.2975; 0.7735];
 HeatElem(1).N = 2;
 %%
 %Schedule of water drawing
 Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-    2.5   40  3 ;
-    5 15  6;
+    0.25   60  1.5 ;
+%     5 15  6;
     ];
 %%
 %Simulation parameters
 %Time
-T_Simulation_hours = 10;% Hours
+T_Simulation_hours = 5;% Hours
 deltaT = 1; %s
 Simulation_Time = 3600*T_Simulation_hours; 
 Max_Simulation_Count = Simulation_Time/deltaT + 1; % seconds = 30 minutes
@@ -37,8 +37,8 @@ Max_Simulation_Count = Simulation_Time/deltaT + 1; % seconds = 30 minutes
 N = 10; % Number of layers
 deltaX = Tank.H/N; %m
 %Conditions
-T_tank = 25; %Tank's initial temperature
-T_Target = 60; % Target temperature
+T_tank = 70; %Tank's initial temperature
+T_Target = 70; % Target temperature
 
 
 
@@ -147,7 +147,7 @@ xlim([0 T_Simulation_hours])
 % ylim([2 9])
 shading interp;
 colormap(jet(30000));
-caxis([0, 100]);
+% caxis([0, 100]);
 rotate3d on;
 xlabel('Time $(h)$','Interpreter','Latex')
 ylabel('Couche $n$','Interpreter','Latex')

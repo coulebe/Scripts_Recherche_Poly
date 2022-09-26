@@ -23,8 +23,8 @@ addpath Functions
 
 % load Donnee_sim_Null_Flow.mat
 % load Time & Space.mat
-data = load('Donnee_sim_Q_and_V.mat');
-u = data.data-data.T_amb; 
+data = load('Donnee_sim_Null_Power');
+u = data.data; 
 dt = (data.Time(2) - data.Time(1))*3600;
 dx = data.Layers(2) - data.Layers(1);
 t = data.Time*3600;
@@ -58,7 +58,7 @@ x = data.Layers;
 
 %Method: Finite difference
 t_th = 1; %order of time derivative
-x_th = 3; %maximum order of spatial derivative
+x_th = 2; %maximum order of spatial derivative
 
 [derivative] = make_input_fd( u,dx,x_th);        
 y0 = make_y_fd( u,dt,t_th );
@@ -68,7 +68,6 @@ input_name = derivative.name;
 
  %Add a reshaped version of Q_mat to input matrix, before making our theta
 
-Q_vec  = reshape(data.Q_mat, [], 1);
 
 
 %%V_vec doesn't depend on x, so we have to replicate it and flatten the
@@ -79,15 +78,16 @@ V_vec  = reshape(V_vec, [], 1);
 %T(x,t)
 
 i = strcmp(input_name, 'u{x}');
-input = [input Q_vec V_vec.*input(:,i)];
-input_name = [input_name 'Q' 'V*u{x}'];
+input = [ones(size(input,1), 1) input V_vec.*input(:,i)];
+input_name = ['1'   input_name 'V*u{x}'];
 
 
 %% Builds a dictionary matrix
 
-polyorder = 1; %maximum power of polynomial function to be included in Theta
-[theta0,theta_name] = build_Theta(input(:,1),input(:,2:end),input_name(1),input_name(2:end),polyorder);
-
+% polyorder = 0; %maximum power of polynomial function to be included in Theta
+% [theta0,theta_name] = build_Theta(input(:,1),input(:,2:end),input_name(1),input_name(2:end),polyorder);
+theta0 = input;
+theta_name = input_name;
 %  %Add a reshaped version of Q_mat to input matrix, before making our theta
 % 
 % Q_vec  = reshape(data.Q_mat, [], 1);
@@ -108,7 +108,7 @@ polyorder = 1; %maximum power of polynomial function to be included in Theta
 
 %% Number of snapshots: 5000
 
-index = randperm(3e4,2500);
+index = randperm(18000,5000);
 theta = theta0(index,:);
 y = y0(index,:);
 
@@ -122,8 +122,8 @@ for i = 1:size(theta,2)
     T(:,i) = Mreg(i)*theta(:,i);    
 end
 
-lambda = 5e-2; %the regularization parameter 
-MAXITER = 20;   %maximum number of inner iterations
+lambda = 1e-3; %the regularization parameter 
+MAXITER = 1000;   %maximum number of inner iterations
 w = tac_reconstruction(y, T, lambda,MAXITER);
 w = w(:,end).*Mreg; %identified parameters corresponding to the basis function in Theta
 
@@ -147,5 +147,5 @@ end
 %% print error
 % u{t} = Dc*u{xx} - UL*(u{xx}-u_amb) + Q(x,t)
 % RMS Error
-err = abs([(data.Tank.Dc*data.eps -w(4))/(data.Tank.Dc*data.eps), (-data.Tank.UL*10 -w(2))/(data.Tank.UL*10), (1 - w(6)), (1 - w(7))]);
+err = abs([(data.Tank.Dc*150 -w(4))/(data.Tank.Dc*150), (-data.Tank.UL*10 -w(2))/(data.Tank.UL*10), (-1 - w(6))]);
 fprintf('\nerror: mea = %.4f%%, stad = %.4f%%\n',mean(err)*100,std(err)*100);
