@@ -147,29 +147,52 @@ def PowerState(T_vec, HE, Target, deltaX, N_layers):
     return heatState
 
 #%%
+# def DrawRate(t, Tank, DrawTab):
+#     '''
+#     Mean to determine the draw rate at each moment given the draw tab
+#     Parameters:
+#         t: time (s)
+#         Tank: Object having the tank Caracteristics(Cf higher for more details)
+#         DrawTab: Tab having the schedule of all draw with ['Start_time(h), duration(min), Debit(L/min)']
+#     Outputs: Value of Draw Rate(m/s)
+#         '''
+#     I = np.size(DrawTab, 0)
+#     if I > 0:
+#         for i in reversed(range(I)):
+#             if t >= DrawTab[i,0] *3600:
+#                 break
+#         if(t >= (DrawTab[i,0] *3600)) and (t <= (DrawTab[i,0] *3600 + DrawTab[i,1] *60)):
+#             V = DrawTab[i,2] * 1e-3 * Tank.H/(Tank.Vol*60)
+#         else:
+#             V = 0
+#     else:
+#          V = 0
+                 
+#     return V
+
 def DrawRate(t, Tank, DrawTab):
     '''
     Mean to determine the draw rate at each moment given the draw tab
     Parameters:
         t: time (s)
         Tank: Object having the tank Caracteristics(Cf higher for more details)
-        DrawTab: Tab having the schedule of all draw with ['Start_time(h), duration(min), Debit(L/min)']
+        DrawTab: Tab having the schedule of all draw with ['Start_time(h), duration(min), Debit(L/min)'] in a pandas.DataFrame format
     Outputs: Value of Draw Rate(m/s)
         '''
-    I = np.size(DrawTab, 0)
+    I = len(DrawTab.index)
     if I > 0:
         for i in reversed(range(I)):
-            if t >= DrawTab[i,0] *3600:
+            if t >= DrawTab['Start(h)'][i] *3600:
                 break
-        if(t >= (DrawTab[i,0] *3600)) and (t <= (DrawTab[i,0] *3600 + DrawTab[i,1] *60)):
-            V = DrawTab[i,2] * 1e-3 * Tank.H/(Tank.Vol*60)
+        if(t >= (DrawTab['Start(h)'][i] *3600)) and (t <= (DrawTab['Start(h)'][i] *3600\
+                                                           + DrawTab['Duration(min)'][i] *60)):
+            V = DrawTab['Draw Rate(L/min)'][i] * 1e-3 * Tank.H/(Tank.Vol*60)
         else:
             V = 0
     else:
          V = 0
                  
     return V
-    
 
 #%%
 
