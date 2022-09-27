@@ -15,27 +15,29 @@ Tank(1).Dc = 1.8/(Tank.Rho*Tank.Cv); %m²/s % Thermal diffusity coefficient
 %Heating Elements
 HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions', {}, 'Thermos', {},'N', {});
 HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
+HeatElem(1).Power = 0*6e3; %Watt % Electrical power delivered by each heating element
 HeatElem(1).Positions = [0.2; 0.72];
 HeatElem(1).Thermos = [0.4; 0.92];
 HeatElem(1).N = 2;
 %%
 %Schedule of water drawing
-Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-    2.5   40  3 ;
-    5 15  6;
-    ];
+% Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
+%     2.5   40  3 ;
+%     5 15  6;
+%     ];
+Draw_Tab = readmatrix('Draw_tab_var.csv');
+Draw_Tab = Draw_Tab(:,2:end);
 %Simulation parameters
 %Time
 deltaT = 5; %s
-sim_time = 10;%h
+sim_time = 5;%h
 %Space
 n = 10;
 %Conditions
-T_tank = 25; %Initial temperature in the tank 
+T_tank = 70; %Initial temperature in the tank 
 T_amb = 25; %Ambiant temparature
 T_in = 25; %Inlet water temperature
-T_target = 60; 
+T_target = 70; 
 eps = 150;
 %%
 Tank(1).UL = 4*1.5*sqrt(pi/Tank.A)/(Tank.Rho*Tank.Cv*n); %s^-1 %Thermal losses coefficient 

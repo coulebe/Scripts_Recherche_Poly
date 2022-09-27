@@ -16,22 +16,22 @@ Tank(1).UL_ = 0*1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries
 %Heating Element
 HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions',{}, 'Thermos', {}, 'N', {});
 HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 0*6e3; %Watt % Electrical power delivered by each heating element
+HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
 HeatElem(1).Positions = [0.2975; 0.7735];
 HeatElem(1).Thermos = [0.2975; 0.7735];
 HeatElem(1).N = 2;
 %%
 %Schedule of water drawing
-% Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-%     2.5   60  1.5 ;
-%     5 15  6;
-%     ];
-Draw_Tab = readmatrix('Draw_tab_var.csv');
-Draw_Tab = Draw_Tab(:,2:end);
+Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
+    0.25   60  1.5 ;
+    5 15  6;
+    ];
+% Draw_Tab = readmatrix('Draw_tab_var.csv');
+% Draw_Tab = Draw_Tab(:,2:end);
 %%
 %Simulation parameters
 %Time
-T_Simulation_hours = 5;% Hours
+T_Simulation_hours = 10;% Hours
 deltaT = 1; %s
 Simulation_Time = 3600*T_Simulation_hours; 
 Max_Simulation_Count = Simulation_Time/deltaT + 1; % seconds = 30 minutes
@@ -72,19 +72,19 @@ data(:,1) = Tm(1:end-1);
 for count = 2: Max_Simulation_Count
 
 
-    V_vec(count,:) = drawRate(count, Tank, Draw_Tab);
+    V_vec(count+1,:) = drawRate(count, Tank, Draw_Tab);
 %Check if a heatint element need to be activated 
     heatState = 1*PowerState(Tm,HeatElem,T_Target,deltaX, N);
 
 
-    [Z1, Z2, Z3] = Matrix(N, V_vec(count,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
+    [Z1, Z2, Z3] = Matrix_(N, V_vec(count,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
 
 
     Am = Z1\Z2;
     Bm = Z1\Z3;
     Tm =  Am *Tm + Bm ;
     %Boundary conditions
-    if V_vec(count,:) == 0
+    if V_vec(count+1,:) == 0
         Tm(1) = (4*Tm(2)-Tm(3))/3;
     else
         Tm(1) = T_in;

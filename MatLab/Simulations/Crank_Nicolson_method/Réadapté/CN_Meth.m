@@ -45,47 +45,29 @@ function [tsol, xVector, sol] = CN_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_ti
     deltaX = Tank.H/N_layer; %m
 
     %% Simulation
-    count = 0;
-    Tm = [T_amb;ones(N_layer-1,1)*T_tank;T_tank];
+
 
     tsol = zeros(1,Max_Simulation_Count);
-    sol = zeros(N_layer,Max_Simulation_Count);
-    while (count < Max_Simulation_Count)
+    sol = zeros(N_layer+1,Max_Simulation_Count);
+    sol(:, 1) = [ones(N_layer,1)*T_tank;T_amb];
+    for count = 2:Max_Simulation_Count
 
-        if(~isempty(Draw_Tab))
-            if(count > (Draw_Tab(1,1) * 60*60/deltaT))
-                V = Draw_Tab(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s
-
-                if(count > (Draw_Tab(1,1) * 60*60/deltaT + Draw_Tab(1,2)*60/deltaT))
-                    V = 0;
-                    Draw_Tab(1,:) = [];
-                end
-            else
-                V = 0;
-            end
-        else
-            V = 0;
-        end
-
-        heatState = PowerState(Tm,HeatElem,T_target,deltaX, N_layer);
+        V = drawRate(count*deltaT, Tank, Draw_Tab);
+        heatState = PowerState(sol(:, count),HeatElem,T_target,deltaX, N_layer);
 
 
-        [Z1, Z2, Z3] = Matrix_(N_layer, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);
+        [Z1, Z2, Z3] = Matrix(N_layer, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);
 
 
         Am = Z1\Z2;
         Bm = Z1\Z3;
-        Tm = Am*Tm+Bm;
+        sol(:, count) = Am*sol(:, count-1)+Bm;
         if V == 0
-            Tm(1) = Tm(2);
-            Tm(N_layer) = Tm(N_layer-1);
+            sol(1, count) = (4*sol(2, count)-sol(3, count))/3;
         else
-            Tm(1) = T_in;
-            Tm(N_layer) = Tm(N_layer-1);
+            sol(1, count) = T_in;
         end
-        count = count+1;
         tsol(:,count) = count*deltaT;
-        sol(:,count) = Tm(1:end-1);
     end
-
+    sol = sol(1:end-1, :);
 end
