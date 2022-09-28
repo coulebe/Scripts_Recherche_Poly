@@ -143,4 +143,14 @@ zlabel('Temp $^{\circ}$ C','Interpreter','Latex')
 hc=colorbar();
 title(hc,'$^{\circ}$ C','Interpreter','Latex');
 %%
+figure()
+plot(Time/3600, V_vec);
+hold on;
+grid on;
+xlabel('Time $(h)$','Interpreter','Latex','FontSize',12)
+ylabel('Draw Rate (m/s)')
+
+
+
+
 toc

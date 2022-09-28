@@ -9,7 +9,7 @@ function V = drawRate(t, Tank, Draw_Tab)
             end
         end
         if(t >= (Draw_Tab(i,1) * 60*60)) && (t <= (Draw_Tab(i,1) * 60*60 + Draw_Tab(i,2)*60))
-            V = Draw_Tab(1,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s   
+            V = Draw_Tab(i,3)*1e-3*Tank.H/(Tank.Vol*60); %m/s   
         else
             V = 0;
         end

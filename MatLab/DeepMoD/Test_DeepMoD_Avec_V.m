@@ -23,7 +23,7 @@ addpath Functions
 
 % load Donnee_sim_Null_Flow.mat
 % load Time & Space.mat
-data = load('Donnee_sim_Null_Power');
+data = load('Donnee_sim_Null_Power_VarFlow_100_layers');
 u = data.data; 
 dt = (data.Time(2) - data.Time(1))*3600;
 dx = data.Layers(2) - data.Layers(1);
@@ -108,7 +108,7 @@ theta_name = input_name;
 
 %% Number of snapshots: 5000
 
-index = randperm(18000,5000);
+index = randperm(18000,10000);
 theta = theta0(index,:);
 y = y0(index,:);
 
@@ -122,14 +122,14 @@ for i = 1:size(theta,2)
     T(:,i) = Mreg(i)*theta(:,i);    
 end
 
-lambda = 1e-3; %the regularization parameter 
-MAXITER = 1000;   %maximum number of inner iterations
+lambda = 1e-1; %the regularization parameter 
+MAXITER = 100;   %maximum number of inner iterations
 w = tac_reconstruction(y, T, lambda,MAXITER);
 w = w(:,end).*Mreg; %identified parameters corresponding to the basis function in Theta
 
 %% print result
 
-threshold = 1e-7; %filter those cofficients in w being less than the threshold
+threshold = 1e-10; %filter those cofficients in w being less than the threshold
 y_name = 'u{t}';
 fprintf('\n%s = ', y_name);
 for i = 1:size(w,1)
@@ -147,5 +147,5 @@ end
 %% print error
 % u{t} = Dc*u{xx} - UL*(u{xx}-u_amb) + Q(x,t)
 % RMS Error
-err = abs([(data.Tank.Dc*150 -w(4))/(data.Tank.Dc*150), (-data.Tank.UL*10 -w(2))/(data.Tank.UL*10), (-1 - w(6))]);
+err = abs([(data.Tank.Dc*150 -w(4))/(data.Tank.Dc*150), (-data.Tank.UL*10 -w(2))/(data.Tank.UL*10), (-1 - w(5))]);
 fprintf('\nerror: mea = %.4f%%, stad = %.4f%%\n',mean(err)*100,std(err)*100);
