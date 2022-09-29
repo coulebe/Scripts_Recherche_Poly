@@ -4,7 +4,7 @@ import pandas as pd
 
 
 #%%
-start = 0.25 #Heure
+start = 0 #Heure
 stop = 4.5 # Heure
 step_time = 0.5 # Heure
 step_flow = 0.05 # L/min
@@ -72,4 +72,4 @@ plt.show()
 #%%
 df = pd.DataFrame(data = Draw_tab, columns = ['Start(h)', 'Duration(min)', 'Draw Rate(L/min)'])
 
-# df.to_csv('Draw_tab_var.csv')
+df.to_csv('Draw_tab_var_bis.csv')

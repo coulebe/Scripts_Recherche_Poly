@@ -37,7 +37,7 @@ except:
 #%%
 deltaT = 1 #s
 sim_time = DrawTab['Start(h)'][max(DrawTab.index)] +  DrawTab['Duration(min)'][max(DrawTab.index)]/60 + 0.5 #We'll end the simulation 30 min after the last draw
-N = 100
+N = 10
 #%%
 T_init = 70
 T_amb = 25
@@ -46,7 +46,7 @@ T_target = 70
 eps = 150
 #%%Simulation
 #%%
-tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps, He_Activ = True )
+tsol, xVector, sol, Q_mat, vVec = CN.CN_meth(Tank_, HE, DrawTab, deltaT, sim_time, N, T_init, T_amb, T_in, T_target, eps, He_Activ = False )
 
 
 #%%Plotting
@@ -68,5 +68,5 @@ plt.show()
 
 # dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
 #             'V': vVecmesh}
-# np.save('EWH_sim_NullPower_VarFlow_CN_data', dico)
+# np.save('EWH_sim_NullPower_VarFlow_CN_data_bis', dico)
 #%%
