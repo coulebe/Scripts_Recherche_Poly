@@ -64,9 +64,9 @@ fig.colorbar(mappable=im)
 # fig.colorbar(im, shrink=0.5, aspect=5)    
 plt.show()
 #%%Save
-# vVecmesh = mb.repmat(vVec, N, 1)
+vVecmesh = mb.repmat(vVec, N, 1)
 
-# dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
-#             'V': vVecmesh}
-# np.save('EWH_sim_NullPower_VarFlow_CN_data_bis', dico)
+dico = {'x' : xVector_mesh,  't' : tsol_mesh*3600, 'u' : sol, 'Q' : Q_mat, \
+            'V': vVecmesh}
+np.save('EWH_sim_NullPower_CF_CN_data_bis', dico)
 #%%
