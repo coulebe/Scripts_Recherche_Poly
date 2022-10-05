@@ -6,22 +6,23 @@ addpath PDEPE_method
 
 %%
 %System parameters
+load('Tank Without name.mat')
 %Tank
-Tank = struct('Vol', {}, 'H', {}, 'Cv', {},'Rho', {}, 'Dc', {}, 'UL', {}, 'UL_', {}, 'A', {});
-Tank(1).H = 1.12; %m %Tank Height 
-Tank(1).A = 0.1; %m²%Tank cross-sectionnal area
-Tank(1).Vol = Tank.H * Tank.A; %m^3 %Tank Volume
-Tank(1).Cv = 4181.3; %%Heat capacity of water 
-Tank(1).Rho = 1e3; %kg/m^3 %Density of water
-Tank(1).Dc = 1.8/(Tank.Rho*Tank.Cv); %m²/s % Thermal diffusity coefficient
+% Tank = struct('Vol', {}, 'H', {}, 'Cv', {},'Rho', {}, 'Dc', {}, 'UL', {}, 'UL_', {}, 'A', {});
+% Tank(1).H = 1.12; %m %Tank Height 
+% Tank(1).A = 0.1; %m²%Tank cross-sectionnal area
+% Tank(1).Vol = Tank.H * Tank.A; %m^3 %Tank Volume
+% Tank(1).Cv = 4181.3; %%Heat capacity of water 
+% Tank(1).Rho = 1e3; %kg/m^3 %Density of water
+% Tank(1).Dc = 1.8/(Tank.Rho*Tank.Cv); %m²/s % Thermal diffusity coefficient
 
 %Heating Elements
-HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions', {}, 'Thermos', {},'N', {});
-HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
-HeatElem(1).Positions = [0.2975; 0.7735];
-HeatElem(1).Thermos = [0.2975; 0.7735];
-HeatElem(1).N = min([size(HeatElem.Positions, 1) size(HeatElem.Thermos, 1)]);
+% HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions', {}, 'Thermos', {},'N', {});
+% HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
+% HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
+% HeatElem(1).Positions = [0.2975; 0.7735];
+% HeatElem(1).Thermos = [0.2975; 0.7735];
+% HeatElem(1).N = min([size(HeatElem.Positions, 1) size(HeatElem.Thermos, 1)]);
 %%
 %Schedule of water drawing
 % Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
@@ -49,7 +50,7 @@ T_in = 25; %Inlet water temperature
 T_target = 60; 
 eps = 150;
 %%
-Tank(1).UL = 4*1.5*sqrt(pi/Tank.A)/(Tank.Rho*Tank.Cv*n); %s^-1 %Thermal losses coefficient 
+% Tank(1).UL = 4*1.5*sqrt(pi/Tank.A)/(Tank.Rho*Tank.Cv); %s^-1 %Thermal losses coefficient 
 Tank(1).UL_ = Tank.UL*(1 + (n/(4*Tank.H)) * sqrt(Tank.A/pi) ); %s^-1 %Thermal losses coefficient on boundaries 
 %%
 fprintf ("Crank-Nicholson method: ")

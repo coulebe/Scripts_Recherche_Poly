@@ -10,7 +10,7 @@ Tank(1).H = 1.19; %m %Tank Height
 Tank(1).Cv = 4185.5; %J/(kg T)%Heat capacity of water 
 Tank(1).Rho = 1e3; %kg/m^3 %Density of water
 Tank(1).Dc = 0.14e-6; %m²/s % Thermal diffusity coefficient
-Tank(1).UL = 6.3588e-7; %s^-1 %Thermal losses coefficient 
+Tank(1).UL = 6.3588e-6; %s^-1 %Thermal losses coefficient 
 Tank(1).UL_ = 0*1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries 
 
 %Heating Element
