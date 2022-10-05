@@ -1,143 +1,71 @@
-% echo on;
-clear 
-tic
-sim_time = 5;%h
-global T_tank;
-global T_amb;
-global T_in;
-global iterator;
-global T_target;
-global xVector;
-global eps;
-global n;
-global token;
-token = struct('HE', -1, 't', -1); % Servir a garder en mémoire quel élément chauffant est activé à quel instant t
+function [tsol, xVector, sol] = PDEPE_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_time,N_layer, T_tank, T_amb, T_in, T_target, eps  )
+    %This function resolve the pdepe of the temperature in a water tank by
+    %using pdepe method
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Parameters%%%%%%%%%%%%%%%%%%%%%
+    %
+    %Tank: A structure containing the tank caracteristics(
+    %       Vol: Volume(m^3), H: Heigth(m), Cv: Heat capacity of the fluid(J/(kg °K)), 
+    %       Rho: Fluid density(kg/m^3), Dc: Thermal diffusity coefficient(m²/s), 
+    %       UL: Thermal losses coefficient(s^-1), UL_ = Thermal losses coefficient the boudaries)
+    %
+    %HeatElem: A strauture containing the Heating Elements caracteristics(
+    %       n_eff: Efficiency of the heating elements
+    %       Power: Electrical power delivred by each element(Watt),
+    %       Positions: Tab containing the position of the heating element(Ascending)
+    %       Thermos: Tab containing the position of the the thermostat used for heating elements control(Ascending)
+    %       N: Number of heating elements
+    %       Positions and thermos must have same length = N)
+    %
+    %Draw_tab : Tab containing the draw planned during the simulation. Each
+    %line contain the hour when  the draw start(h), its duration(min), and
+    % its debit(l/min). The tab is ascending given the hour of start.
+    %
+    %deltaT : Time step(s)
+    %sim_time: Duration of the simulation(h)
+    %N_layers: number of layers that discretize the space
+    %T_tank: initial temperature in the tank(°C)
+    %T_amb: Ambient temperaure(°C)
+    %T_in: inlet fluid temperaure(°C)
+    %T_target: Target temperature for the heating element control(°C)
+    %eps coefficient that replace the thermal expansion coefficient
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Output%%%%%%%%%%%%%%%%%%%%%%%%%
+    %tsol: solution time vector(1xM)(sec)
+    %xVector: Space vector (1xN_layers)(m)
+    %sol: Solution matrice(NxM)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Time variable
+    t_max = 3600*sim_time;
+    nb_point = t_max/deltaT + 1;
+    %Space
+    xVector = linspace(0,Tank.H,N_layer); %Discretization of space
+    heatState = zeros(HeatElem.N,1);
+    %%
+    %Simulation
+    initial = [T_tank;ones(N_layer-2,1)*T_tank;T_tank]';
+    currentTemp = initial;
+    t0 = 0; step = deltaT; tf = step; tn = 3;
+    t = linspace(t0,tf,tn);
+    sol= initial;
+    option = odeset('RelTol',1e-2,'AbsTol',1e-5);
 
-global Draw_Tab;
-%
-Draw_Tab = [ %% Draw_start(h) Draw_Duration(min) Draw_Debit(l/min)
-    2.5   40  3 ;
-%     5 15  6;
-    ];
-%
-global Tank;
-Tank = struct('Vol', {}, 'H', {}, 'Cv', {},'Rho', {}, 'Dc', {}, 'UL', {}, 'UL_', {});
-Tank(1).Vol = 112e-3; %m^3 %Tank Volume
-Tank(1).H = 1.19; %m %Tank Height 
-Tank(1).Cv = 4185.5; %J/(kg T)%Heat capacity of water 
-Tank(1).Rho = 1e3; %kg/m^3 %Density of water
-Tank(1).Dc = 0.14e-6; %m²/s % Thermal diffusity coefficient
-Tank(1).UL = 6.3588e-7; %s^-1 %Thermal losses coefficient 
-Tank(1).UL_ = 1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries 
-%
-global HeatElem;
-HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions', {}, 'N', {});
-HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
-HeatElem(1).Positions = [0.2975; 0.7735];
-HeatElem(1).N = 2;
-iterator = 0;
-deltaT = 30;
-
-n = 10;
-t_max = 3600*sim_time;
-nb_point = t_max/deltaT + 1;
-t_0 = 0;
-x = linspace(0,1.19,n);
-xVector = x;
-T_tank = 25;
-T_amb = 25;
-T_in = 25;
-T_target = 60;
-eps = 150;
-global HS;
-HS = [];
-
-global currentTemp;
-global initial;
-
-initial = [T_tank;ones(n-2,1)*T_tank;T_tank]';
-currentTemp = initial;
-t0 = 0; step = deltaT; tf = step; tn = 3;
-t = linspace(t0,tf,tn);
-zf = t_max/step;
-u=[];
-option = odeset('RelTol',1e-2,'AbsTol',1e-5);
-for z=1:nb_point
-    sol=pdepe(0,@pdefun,@icfun,@bcfun,x,t,option);
-    currentTemp = smooth(sol(end,:));
-%     currentTemp = sol(end,:);
-    u=[u; sol(1:end-1,:)];
-    initial = smooth(sol(end,:));
-%     initial = sol(end,:);
-
-    t0=t0+step;
-    tf=tf+step;
-    t=linspace(t0,tf,tn);
-end
-
-%% Figure de la temp rature spatiale en fonction du temps
-figure(1);
-tg = linspace(0,tf,length(u));
-surf(tg/3600,x,u.');
-xlim([0 sim_time]);
-ylim([0 max(x)]);
-% surf(x,t,u);
-shading interp;
-colormap(jet(300));
-rotate3d on;
-caxis([0, 100]);
-hc=colorbar();
-title(hc,'$^{\circ}$ C','Interpreter','Latex');
-%view(45,30);
-%title('Reaction-Advection-Diffusion Equation','FontSize',12');
-ylabel('Distance $x$','Interpreter','Latex','FontSize',12');
-xlabel('Time $t$','Interpreter','Latex','FontSize',12');
-zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',12');
-%% Figure de la temp rature spatiale en fonction du temps
-% pdeTime = tg/3600;
-% pdepeU = u;
-% figure (2)
-% for i=1:(n-2)
-%     subplot(n-2,1,i);
-%     if (i == 3)
-%         plot(pdeTime,pdepeU(:,n-i),'r');
-%     elseif (i == 7)
-%         plot(pdeTime,pdepeU(:,n-i),'r');
-%     else
-%         plot(pdeTime,pdepeU(:,n-i));
-%     end
-%     hold on;
-%     grid on;
-%     legend(strcat('Couche n = ',num2str(n-i')))
-%     ylabel('Temp $^{\circ}$ C','Interpreter','Latex','FontSize',9');
-%     xlim([0 sim_time])
-%     ylim([15 65])
-% end
-% xlabel('Time $(h)$','Interpreter','Latex','FontSize',12');
-%%
-%Figure montrant la qu'il n'y a pas d'activation simultanée des éléments
-%chauffants
-figure()
-for i =1:HeatElem.N  
-    subplot(HeatElem.N,1,i);
-    plot(HS(1,:), HS(i+1,:));
-    hold on;
-    grid on;
-    legend(strcat('Element chauffant', num2str(i)));
-    ylim([0 1]);
-    xlim([0 100]);
-    ylabel('Etat')
+    for z=1:nb_point-1
+        pdefunc = @(x,t,T,dTdx) pdefun_(x,t,T,dTdx, Tank, HeatElem, T_amb, heatState, eps, N_layer, Draw_Tab);
+        bcfunc = @(xl,ul,xr,ur,t) bcfun_(xl,ul,xr,ur,t, Tank, T_in, currentTemp, N_layer, Draw_Tab);
+        icfunc = @(x) icfun_(x,xVector, initial);
+        u=pdepe(0,pdefunc,icfunc,bcfunc,xVector,t,option);
+        currentTemp = u(end,:);
+        sol=[sol; u(end,:)];
+        initial = u(end,:);
+        heatState = PowerState_(sol(end, :),HeatElem,T_target,xVector);
+        t0=t0+step;
+        tf=tf+step;
+        t=linspace(t0,tf,tn);
+    end
+    tsol = linspace(0, tf, nb_point);
+    sol = sol.';
     
+
 end
-figure()
-plot(HS(1,:), HS(2,:) & HS(3,:))
-hold on;
-    grid on;
-    title("Vérification de simultanéité d'activation");
-    ylim([0 1]);
-    xlim([0 100]);
-    ylabel('Etat')
-toc
-
-

@@ -53,7 +53,7 @@ function [tsol, xVector, sol] = CN_Meth(Tank, HeatElem, Draw_Tab, deltaT, sim_ti
     for count = 2:Max_Simulation_Count
 
         V = drawRate(count*deltaT, Tank, Draw_Tab);
-        heatState = PowerState(sol(:, count),HeatElem,T_target,deltaX, N_layer);
+        heatState = PowerState(sol(:, count-1),HeatElem,T_target,deltaX, N_layer);
 
 
         [Z1, Z2, Z3] = Matrix(N_layer, V,deltaX,deltaT,eps, Tank, heatState, HeatElem);

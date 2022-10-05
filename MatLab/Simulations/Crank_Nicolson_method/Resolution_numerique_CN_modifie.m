@@ -16,7 +16,7 @@ Tank(1).UL_ = 0*1.2382e-6; %s^-1 %Thermal losses coefficient on boundaries
 %Heating Element
 HeatElem = struct('n_eff', {}, 'Power', {}, 'Positions',{}, 'Thermos', {}, 'N', {});
 HeatElem(1).n_eff = 0.95; %Efficiency of the heating elements
-HeatElem(1).Power = 0*6e3; %Watt % Electrical power delivered by each heating element
+HeatElem(1).Power = 6e3; %Watt % Electrical power delivered by each heating element
 HeatElem(1).Positions = [0.2975; 0.7735];
 HeatElem(1).Thermos = [0.2975; 0.7735];
 HeatElem(1).N = 2;
@@ -31,23 +31,20 @@ Draw_Tab = Draw_Tab(:,2:end);
 %%
 %Simulation parameters
 %Time
-T_Simulation_hours = 5;% Hours
-deltaT = 1; %s
+T_Simulation_hours = 10;% Hours
+deltaT = 5; %s
 Simulation_Time = 3600*T_Simulation_hours; 
 Max_Simulation_Count = Simulation_Time/deltaT + 1; % seconds = 30 minutes
 %Space
-N = 100; % Number of layers
+N = 10; % Number of layers
 deltaX = Tank.H/N; %m
 %Conditions
-T_tank = 70; %Tank's initial temperature
-T_Target = 70; % Target temperature
+T_tank = 25; %Tank's initial temperature
+T_Target = 60; % Target temperature
 
 
 
 %Simulation parameters
-%For Later,  Think about convergence and stability conditions of the Crank-Nicolson's 
-%Scheme if needed
-
 
 %
 eps = 150;
@@ -58,23 +55,23 @@ HeatElem.N = 2; %Number of heating elements
 
 T_amb = 25;
 T_in = 25;
-Tm = [ones(N,1)*T_tank;T_amb];
+
 V_vec = zeros(Max_Simulation_Count, 1);
 
 
 Power = zeros(HeatElem.N,Max_Simulation_Count);
 PowerTotal = zeros(1,Max_Simulation_Count);
 Time = zeros(1,Max_Simulation_Count);
-data = zeros(N,Max_Simulation_Count);
+data = zeros(N+1,Max_Simulation_Count);
 E = 0;
 Q_mat = zeros(N,Max_Simulation_Count);
-data(:,1) = Tm(1:end-1);
+data(:,1) = [ones(N,1)*T_tank;T_amb];
 for count = 2: Max_Simulation_Count
 
 
-    V_vec(count,:) = drawRate(count, Tank, Draw_Tab);
+    V_vec(count,:) = drawRate(count*deltaT, Tank, Draw_Tab);
 %Check if a heatint element need to be activated 
-    heatState = 1*PowerState(Tm,HeatElem,T_Target,deltaX, N);
+    heatState = 1*PowerState(data(:,count-1),HeatElem,T_Target,deltaX, N);
 
 
     [Z1, Z2, Z3] = Matrix(N, V_vec(count,:),deltaX,deltaT,eps, Tank, heatState, HeatElem);
@@ -82,19 +79,19 @@ for count = 2: Max_Simulation_Count
 
     Am = Z1\Z2;
     Bm = Z1\Z3;
-    Tm =  Am *Tm + Bm ;
+    data(:,count) =  Am *data(:,count-1) + Bm ;
     %Boundary conditions
     if V_vec(count,:) == 0
-        Tm(1) = (4*Tm(2)-Tm(3))/3;
+        data(1, count) = (4*data(2, count) - data(3,count))/3;
     else
-        Tm(1) = T_in;
+        data(1, count) = T_in;
     end
-    Tm(N) = (4*Tm(N-1) - Tm(N-2))/3;
+    data(N, count) = (4*data(N-1, count) - data(N-2, count))/3;
     Power(:,count) = heatState;
     Q_mat(:,count) = Z3(1:end-1);
     PowerTotal(:,count) = sum(heatState);
-    Time(:,count) = count*deltaT/3600;
-    data(:,count) = Tm(1:end-1);
+    Time(:,count) = (count-1)*deltaT/3600;
+
     E = E + HeatElem.Power*(sum(heatState))*deltaT/3600/1000; %KJ
 end
 %% Figure de la température dans le réservoir
@@ -130,7 +127,7 @@ end
 %% Figure en 3D de l'évolution de la température
 figure()
 Layers = linspace(0,Tank.H,N);
-surf(Time,Layers,data)
+surf(Time,Layers,data(1:end-1,:))
 xlim([0 T_Simulation_hours])
 % ylim([2 9])
 shading interp;
@@ -144,13 +141,10 @@ hc=colorbar();
 title(hc,'$^{\circ}$ C','Interpreter','Latex');
 %%
 figure()
-plot(Time/3600, V_vec);
+plot(Time, V_vec);
 hold on;
 grid on;
 xlabel('Time $(h)$','Interpreter','Latex','FontSize',12)
 ylabel('Draw Rate (m/s)')
-
-
-
 
 toc
