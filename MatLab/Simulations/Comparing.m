@@ -40,7 +40,7 @@ Draw_Tab = Draw_Tab(:,2:end);
 %Simulation parameters
 %Time
 deltaT = 5; %s
-sim_time = 5;%h
+sim_time = 10;%h
 %Space
 n = 100;
 %Conditions
@@ -74,12 +74,13 @@ colormap(jet(300));
 rotate3d on;
 % caxis([0, 100]);
 hc=colorbar();
-title(hc,'$^{\circ}$ C','Interpreter','Latex');
+title(hc,'$^{\circ}$ C','Interpreter','Latex','FontSize',20);
 %view(45,30);
-title("Résultat de l'équation par Crank-Nicholson",'FontSize',12');
-ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',12');
-xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',12');
-zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',12');
+% title("Résultat de l'équation par Crank-Nicholson",'FontSize',15);
+ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',20);
+xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',20);
+zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',20);
+set(gca,'FontSize',20);
 %%
 figure();
 surf(tsol_PDEPE/3600,xVector_PDEPE,sol_PDEPE);
@@ -90,12 +91,13 @@ colormap(jet(300));
 rotate3d on;
 % caxis([0, 100]);
 hc=colorbar();
-title(hc,'$^{\circ}$ C','Interpreter','Latex');
+title(hc,'$^{\circ}$ C','Interpreter','Latex','FontSize',20);
 %view(45,30);
-title("Résultat de l'équation par PDEPE",'FontSize',12');
-ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',12');
-xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',12');
-zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',12');
+% title("Résultat de l'équation par PDEPE",'FontSize',15);
+ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',20);
+xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',20);
+zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',20);
+set(gca,'FontSize',20);
 %% Figure de la temp rature spatiale en fonction du temps
 % figure ()
 % for i=1:n
@@ -126,7 +128,7 @@ rotate3d on;
 hc=colorbar();
 title(hc,'$^{\circ}$ C','Interpreter','Latex');
 %view(45,30);
-title("Crank-Nicolson-PDEPE absolute error",'FontSize',12');
-ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',12');
-xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',12');
-zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',12');
+title("Crank-Nicolson-PDEPE absolute error",'FontSize',15);
+ylabel('Distance $x$ (m)','Interpreter','Latex','FontSize',15);
+xlabel('Time $t$ (h)','Interpreter','Latex','FontSize',15);
+zlabel('Solution $u(x,t)$','Interpreter','Latex','FontSize',15);
