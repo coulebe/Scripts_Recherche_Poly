@@ -42,15 +42,8 @@ else:
     device = "cpu"
 print(device)
 
-
 #%%
-# MoD1
-#Functions
-def load_MoD1(file_name):
-    array = np.load(file_name, allow_pickle=True).item()
-    coords = torch.from_numpy(np.stack((array["t"],array["x"], array["V"], array["P"], array["Ta"]), axis=-1)).float()
-    data = torch.from_numpy(np.real(array["T"])).unsqueeze(-1).float()
-    return coords, data
+#General functions
 
 def custom_normalize(X):
         """minmax Normalize the data. Per feature
@@ -63,6 +56,15 @@ def custom_normalize(X):
             - X.view(-1, X.shape[-1]).min(dim=0).values
         ) 
         return X_norm
+#%%
+# MoD1
+#Functions
+def load_MoD1(file):
+    array = np.load(file, allow_pickle=True).item()
+    coords = torch.from_numpy(np.stack((array["t"],array["x"], array["V"], array["P"], array["Ta"]), axis=-1)).float()
+    data = torch.from_numpy(np.real(array["T"])).unsqueeze(-1).float()
+    return coords, data
+
 
 #Set custom library
 class Library_MoD1(Library):
