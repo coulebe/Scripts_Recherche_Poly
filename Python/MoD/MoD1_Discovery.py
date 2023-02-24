@@ -86,7 +86,7 @@ for file_name in files:
     dataset = Dataset(
         load_function= DD_func.load_MoD1,
         subsampler=Subsample_random,
-        subsampler_kwargs={"number_of_samples": 500000, 
+        subsampler_kwargs={"number_of_samples": 800000, 
         },
         load_kwargs= {"file": file_name},
         preprocess_kwargs={
@@ -200,14 +200,14 @@ for file_name in files:
     V_min, V_max = coords[:, :, 2].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 2].view(-1, 1).max(dim = 0).values.numpy()[0]
     P_min, P_max = coords[:, :, 3].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 3].view(-1, 1).max(dim = 0).values.numpy()[0]
     Ta_min, Ta_max = coords[:, :, 4].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 4].view(-1, 1).max(dim = 0).values.numpy()[0]
-    
+
     #Result dataframe with all the denormalized coefficients
     result = pd.DataFrame(columns= ["1", "T", "Ta", "T_xx", "V*T_x", "T_x","P"] )
     result.index.name = "Test_name"
 
-    result.loc[test_name, "1"] = (T_max-T_min) * (coeff_norm[0] - coeff_norm[1]*((T_min/(T_max-T_min)) - (Ta_min/(Ta_max-Ta_min)))) / (t_max-t_min)
+    result.loc[test_name, "1"] = (T_max-T_min) * (coeff_norm[0] - coeff_norm[1]*((T_min/(T_max-T_min)) - (Ta_min/(Ta_max-Ta_min))) - (coeff_norm[4]*P_min/(P_max-P_min)) ) / (t_max-t_min)
     result.loc[test_name,"T"] = coeff_norm[1] / (t_max-t_min)
-    result.loc[test_name,"Ta"] = coeff_norm[1] * (T_max-T_min) / ((t_max-t_min)*(Ta_max-Ta_min))# Minus added bcause we have smthg(T-Ta)
+    result.loc[test_name,"Ta"] = -coeff_norm[1] * (T_max-T_min) / ((t_max-t_min)*(Ta_max-Ta_min))# Minus added bcause we have smthg(T-Ta)
     result.loc[test_name, "T_xx"] = coeff_norm[2] * ((x_max - x_min)**2) / (t_max-t_min)
     result.loc[test_name, "V*T_x"] = coeff_norm[3]*(x_max - x_min) / ((t_max-t_min) * (V_max - V_min))
     result.loc[test_name, "T_x"] = -coeff_norm[3]*(x_max - x_min)*V_min / ((t_max-t_min) * (V_max - V_min))
