@@ -31,16 +31,7 @@ from deepymod import Library
 
 from scipy.integrate import odeint
 
-# Settings for reproducibility
-np.random.seed(40)
-torch.manual_seed(0)
 
-# Configuring GPU or CPU
-if torch.cuda.is_available():
-    device = "cuda"
-else:
-    device = "cpu"
-print(device)
 
 #%%
 #General functions
