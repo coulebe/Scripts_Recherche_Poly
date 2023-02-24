@@ -127,7 +127,7 @@ class Library_MoD1(Library):
         P = data[:, 3:4]
         Ta = data[:, 4:5]
 
-        theta = torch.cat((torch.ones_like(prediction),  prediction-Ta,  u_xx, u_x * V, P), dim=1)
+        theta = torch.cat((torch.ones_like(prediction),  prediction-Ta ,u_xx, u_x * V, P), dim=1)
 
         return [u_t], [theta]
 
