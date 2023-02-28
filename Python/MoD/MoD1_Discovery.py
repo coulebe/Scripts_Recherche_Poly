@@ -86,7 +86,7 @@ for file_name in files:
     dataset = Dataset(
         load_function= DD_func.load_MoD1,
         subsampler=Subsample_random,
-        subsampler_kwargs={"number_of_samples": 800000, 
+        subsampler_kwargs={"number_of_samples": 500000, 
         },
         load_kwargs= {"file": file_name},
         preprocess_kwargs={
@@ -126,7 +126,7 @@ for file_name in files:
 
 
     #Sparsity scheduler
-    estimator = Threshold(1e-5)
+    estimator = Threshold(1e-4)
     sparsity_scheduler = TrainTestPeriodic(periodicity=50, patience=200, delta=1e-5)
 
     #Configuration of the sparsity estimator
@@ -156,7 +156,7 @@ for file_name in files:
         sparsity_scheduler,
         log_dir= os.getcwd() + "\\Logdir\\MoD1\\" ,
         max_iterations=100000,
-        delta=1e-4,
+        delta=1e-3,
         patience=200
     )
 
