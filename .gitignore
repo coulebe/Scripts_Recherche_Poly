@@ -1,0 +1,4 @@
+# ignore all .NPY files
+*.npy
+# ignore all .pycache files
+*.pyc
