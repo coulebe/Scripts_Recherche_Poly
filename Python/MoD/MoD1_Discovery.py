@@ -63,16 +63,22 @@ print(device)
 # In[2]:
 
 
-#Asking the filename to the user(It will be a .npy file for the moment we'll see after if we need to import other fomat as .mat or ohter, think of a preprocess script for the essay datas at Canmet)
-application_window = tk.Tk() 
-fTyp = [("fichier de données (*.npy)", "*.npy")]
-files = filedialog.askopenfilenames(parent=application_window,
-                                    initialdir=os.getcwd(),
-                                    title="Please select your npy file containing the datas and its coords:",
-                                    filetypes=fTyp)
+# #Asking the filename to the user(It will be a .npy file for the moment we'll see after if we need to import other fomat as .mat or ohter, think of a preprocess script for the essay datas at Canmet)
+# application_window = tk.Tk() 
+# fTyp = [("fichier de données (*.npy)", "*.npy")]
+# files = filedialog.askopenfilenames(parent=application_window,
+#                                     initialdir=os.getcwd(),
+#                                     title="Please select your npy file containing the datas and its coords:",
+#                                     filetypes=fTyp)
 
 
-application_window.destroy()
+# application_window.destroy()
+#In a case of a headless OS, here is a way to import Our Test files 
+files = []
+for root, dirs, file in os.walk("Test_files", topdown=False):
+   for name in file:
+      print(os.path.join(root, name))
+      files += [os.path.join(root, name)]
 
 
 for file_name in files:
