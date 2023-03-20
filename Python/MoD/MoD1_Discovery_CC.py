@@ -12,10 +12,9 @@
 import numpy as np
 import torch
 import matplotlib.pylab as plt
-import tkinter as tk
-from tkinter import filedialog
 import os
 import pandas as pd
+
 
 #Function file import
 import DeepMod_Functions as DD_func
@@ -57,27 +56,12 @@ else:
 print(device)
 
 
-# Before we send the data into the Dataset format, create a plot to get an idea of the data:
-# 
 
-# In[2]:
-
-
-# #Asking the filename to the user(It will be a .npy file for the moment we'll see after if we need to import other fomat as .mat or ohter, think of a preprocess script for the essay datas at Canmet)
-# application_window = tk.Tk() 
-# fTyp = [("fichier de données (*.npy)", "*.npy")]
-# files = filedialog.askopenfilenames(parent=application_window,
-#                                     initialdir=os.getcwd(),
-#                                     title="Please select your npy file containing the datas and its coords:",
-#                                     filetypes=fTyp)
-
-
-# application_window.destroy()
 #In a case of a headless OS, here is a way to import Our Test files 
 files = []
 for root, dirs, file in os.walk("Test_files", topdown=False):
    for name in file:
-      print(os.path.join(root, name))
+    #   print(os.path.join(root, name))
       files += [os.path.join(root, name)]
 
 
@@ -91,13 +75,13 @@ for file_name in files:
 
     dataset = Dataset(
         load_function= DD_func.load_MoD1,
-        subsampler=Subsample_random,
-        subsampler_kwargs={"number_of_samples": 800000, 
-        },
+        # subsampler=Subsample_random,
+        # subsampler_kwargs={"number_of_samples": 500000, 
+        # },
         load_kwargs= {"file": file_name},
         preprocess_kwargs={
-            "normalize_coords": True,
-            "normalize_data":  True
+            "normalize_coords": False,
+            "normalize_data":  False
         }, 
         device=device,
         apply_normalize= DD_func.custom_normalize,
@@ -118,7 +102,7 @@ for file_name in files:
 
 
     # Configuration of the library function: We select the custom build library we created earlier
-    # * [$1, (T - T_{a}), \frac{\partial^{2} T}{\partial x^{2}}, V \frac{\partial T}{\partial x}, P$] 
+    # * [$ \frac{\partial^{2} T}{\partial x^{2}}, V \frac{\partial T}{\partial x}, (T - T_{a}), P$] 
 
     # 
 
@@ -132,7 +116,7 @@ for file_name in files:
 
 
     #Sparsity scheduler
-    estimator = Threshold(1e-4)
+    estimator = Threshold(1e-8)
     sparsity_scheduler = TrainTestPeriodic(periodicity=50, patience=200, delta=1e-5)
 
     #Configuration of the sparsity estimator
@@ -171,14 +155,10 @@ for file_name in files:
 
     # 
 
-
     model.sparsity_masks
 
 
     # And it found the following coefficients.
-
-
-
 
     model.estimator_coeffs()
 
@@ -189,35 +169,23 @@ for file_name in files:
 
 
 
-    print(model.library.norms[0].cpu().numpy() * model.estimator_coeffs()[0][:,0])
-    coeff_norm = model.library.norms[0].cpu().numpy() * model.estimator_coeffs()[0][:,0]
-
+    # print(model.library.norms[0].cpu().numpy() * model.estimator_coeffs()[0][:,0])
+    coeff_norm =  model.estimator_coeffs()[0][:,0]
 
     # We have now to denormalize it a second time because, we just have the relation for the normalized(data and coords) terms of the equation
 
 
 
 
-    #Max and max of coords and datas
-    coords, data = DD_func.load_MoD1(file_name)
-    T_min, T_max = data.view(-1, data.shape[-1]).min(dim=0).values.numpy()[0], data.view(-1, data.shape[-1]).max(dim=0).values.numpy()[0]
-    t_min, t_max = coords[0, :, 0].min(dim = 0).values.numpy(), coords[0, :, 0].max(dim = 0).values.numpy()
-    x_min, x_max = coords[:, 0, 1].min(dim = 0).values.numpy(), coords[:, 0, 1].max(dim = 0).values.numpy()
-    V_min, V_max = coords[:, :, 2].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 2].view(-1, 1).max(dim = 0).values.numpy()[0]
-    P_min, P_max = coords[:, :, 3].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 3].view(-1, 1).max(dim = 0).values.numpy()[0]
-    Ta_min, Ta_max = coords[:, :, 4].view(-1, 1).min(dim = 0).values.numpy()[0], coords[:, :, 4].view(-1, 1).max(dim = 0).values.numpy()[0]
-
+    
     #Result dataframe with all the denormalized coefficients
-    result = pd.DataFrame(columns= ["1", "T", "Ta", "T_xx", "V*T_x", "T_x","P"] )
+    result = pd.DataFrame(columns= [ "T-Ta", "T_xx", "V*T_x", "P"] )
     result.index.name = "Test_name"
 
-    result.loc[test_name, "1"] = (T_max-T_min) * (coeff_norm[0] - coeff_norm[1]*((T_min/(T_max-T_min)) - (Ta_min/(Ta_max-Ta_min))) - (coeff_norm[4]*P_min/(P_max-P_min)) ) / (t_max-t_min)
-    result.loc[test_name,"T"] = coeff_norm[1] / (t_max-t_min)
-    result.loc[test_name,"Ta"] = -coeff_norm[1] * (T_max-T_min) / ((t_max-t_min)*(Ta_max-Ta_min))# Minus added bcause we have smthg(T-Ta)
-    result.loc[test_name, "T_xx"] = coeff_norm[2] * ((x_max - x_min)**2) / (t_max-t_min)
-    result.loc[test_name, "V*T_x"] = coeff_norm[3]*(x_max - x_min) / ((t_max-t_min) * (V_max - V_min))
-    result.loc[test_name, "T_x"] = -coeff_norm[3]*(x_max - x_min)*V_min / ((t_max-t_min) * (V_max - V_min))
-    result.loc[test_name, "P"] = coeff_norm[4]*(T_max-T_min) / ((t_max-t_min)*(P_max-P_min))
+    result.loc[test_name,"T-Ta"] = coeff_norm[2] 
+    result.loc[test_name, "T_xx"] = coeff_norm[0] 
+    result.loc[test_name, "V*T_x"] = coeff_norm[1]
+    result.loc[test_name, "P"] = coeff_norm[3]
 
 
 
@@ -225,4 +193,8 @@ for file_name in files:
     prev = pd.read_csv("MoD1_results.csv", index_col=0)
     result = pd.concat([prev, result])
     result.to_csv("MoD1_results.csv")
+
+    #Delete logdir generated files(can't replace it by None in the train function :/)
+    DD_func.remove(os.getcwd() + "\\Logdir\\MoD1\\")
+
 

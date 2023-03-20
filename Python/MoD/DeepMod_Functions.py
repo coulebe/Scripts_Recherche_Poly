@@ -4,11 +4,11 @@
 import numpy as np
 import torch
 import matplotlib.pylab as plt
+import os
+import shutil
 
 
 # DeepMoD functions
-
-
 from deepymod import DeepMoD
 from deepymod.data import Dataset, get_train_test_loader
 from deepymod.data.samples import Subsample_random
@@ -52,12 +52,85 @@ def custom_normalize(X):
 #Functions
 def load_MoD1(file):
     array = np.load(file, allow_pickle=True).item()
-    coords = torch.from_numpy(np.stack((array["t"],array["x"], array["V"], array["P"], array["Ta"]), axis=-1)).float()
+    # coords = torch.from_numpy(np.stack((array["t"],array["x"], array["V"], array["P"], array["Ta"]), axis=-1)).float()
+    coords = torch.from_numpy(np.stack((array["t"],array["x"], array["V"], array["P"]), axis=-1)).float()
     data = torch.from_numpy(np.real(array["T"])).unsqueeze(-1).float()
     return coords, data
 
+def remove(path):
+    """ param <path> could either be relative or absolute. """
+    if os.path.isfile(path) or os.path.islink(path):
+        os.remove(path)  # remove the file
+    elif os.path.isdir(path):
+        shutil.rmtree(path)  # remove dir and all contains
+    else:
+        raise ValueError("file {} is not a file or dir.".format(path))
 
 #Set custom library
+class Library_MoD1_Norm(Library):
+    """[summary]
+
+    Args:
+        Library ([type]): [description]
+    """
+
+    def __init__(self) -> None:
+        # """Calculates the temporal derivative a library/feature matrix consisting of
+        # 1) polynomials up to order poly_order, i.e. u, u^2...
+        # 2) derivatives up to order diff_order, i.e. u_x, u_xx
+        # 3) cross terms of 1) and 2), i.e. $uu_x$, $u^2u_xx$
+
+        # Order of terms is derivative first, i.e. [$1, u_x, u, uu_x, u^2, ...$]
+
+        # Only works for 1D+1 data. Also works for multiple outputs but in that case doesn't calculate
+        # polynomial and derivative cross terms.
+
+        # Args:
+        #     poly_order (int): maximum order of the polynomial in the library
+        #     diff_order (int): maximum order of the differentials in the library
+        # """
+
+        super().__init__()
+
+    def library(
+        self, input: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[TensorList, TensorList]:
+        """Compute a 2D library up to given polynomial order with second order derivatives
+         i.e. for poly_order=1: [$1, u_x, u_Q, u_{xx}, u_{QQ}, u_{xQ}, Q$] because is considered as an input of our neural network
+
+        Args:
+            input (Tuple[torch.Tensor, torch.Tensor]): A prediction u (n_samples, n_outputs) and spatiotemporal locations (n_samples, 3).(Q is the thrid input)
+
+        Returns:
+            Tuple[TensorList, TensorList]: The time derivatives and the thetas
+            computed from the library and data.
+        """
+        prediction, data = input
+
+        # Gradients
+        du = grad(
+            prediction,
+            data,
+            grad_outputs=torch.ones_like(prediction),
+            create_graph=True,
+        )[0]
+        u_t = du[:, 0:1]
+        u_x = du[:, 1:2]
+
+        du2 = grad(
+            u_x, data, grad_outputs=torch.ones_like(prediction), create_graph=True
+        )[0]
+        u_xx = du2[:, 1:2]
+
+        #We add V and multiply it time x, add Q and Ta
+        V = data[:, 2:3]
+        P = data[:, 3:4]
+        # Ta = data[:, 4:5]
+
+        theta = torch.cat((torch.ones_like(prediction),  prediction ,u_xx, u_x * V, P), dim=1)
+
+        return [u_t], [theta]
+
 class Library_MoD1(Library):
     """[summary]
 
@@ -118,7 +191,7 @@ class Library_MoD1(Library):
         P = data[:, 3:4]
         Ta = data[:, 4:5]
 
-        theta = torch.cat((torch.ones_like(prediction),  prediction-Ta ,u_xx, u_x * V, P), dim=1)
+        theta = torch.cat((u_xx, u_x * V, prediction-Ta ,  P), dim=1)
 
         return [u_t], [theta]
 

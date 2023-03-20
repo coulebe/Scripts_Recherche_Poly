@@ -9,4 +9,4 @@ Python/MoD/Logdir/
 #Output files 
 *.out
 #JobScript files
-*.sh
+JobScript/
