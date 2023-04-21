@@ -10,3 +10,5 @@ Python/MoD/Logdir/
 *.out
 #JobScript files
 JobScript/
+#csv files
+*.csv
